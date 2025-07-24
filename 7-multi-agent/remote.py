@@ -4,8 +4,12 @@ import sys
 import vertexai
 from absl import app, flags
 from dotenv import load_dotenv
+from google.adk import Runner
+from google.adk.sessions import VertexAiSessionService
 from vertexai import agent_engines
 from vertexai.preview import reasoning_engines
+from google.adk.memory import VertexAiMemoryBankService
+from vertexai.preview.reasoning_engines.templates import adk
 
 # import root_agent
 from farmer_assistant.agent import root_agent
@@ -46,20 +50,46 @@ def create() -> None:
     """Creates a new deployment."""
     # First wrap the agent in AdkApp
 
-    app = reasoning_engines.AdkApp(
+    import vertexai
+
+    client = vertexai.Client(
+        project="farmai-466317",
+        location="us-central1",
+    )
+
+    agent_engine = client.agent_engines.create()
+
+    agent_engine_id = agent_engine.api_resource.name.split("/")[-1]
+
+    memory_service = VertexAiMemoryBankService(
+        project="farmai-466317",
+        location="us-central1",
+        agent_engine_id=agent_engine_id
+    )
+
+    session_service = VertexAiSessionService(
+        project="PROJECT_ID",
+        location="LOCATION",
+        agent_engine_id=agent_engine_id
+    )
+
+    app_name = "APP_NAME"
+    runner = Runner(
         agent=root_agent,
-        enable_tracing=True,
+        app_name=app_name,
+        session_service=session_service,
+        memory_service=memory_service
     )
 
     # Now deploy to Agent Engine
-    remote_app = agent_engines.create(
-        agent_engine=app,
-        requirements=[
-            "google-cloud-aiplatform[adk,agent_engines]",
-        ],
-        extra_packages=["farmer_assistant"],
-    )
-    print(f"Created remote app: {remote_app.resource_name}")
+    # remote_app = agent_engines.create(
+    #     agent_engine=runner,
+    #     requirements=[
+    #         "google-cloud-aiplatform[adk,agent_engines]",
+    #     ],
+    #     extra_packages=["farmer_assistant"],
+    # )
+    # print(f"Created remote app: {remote_app.resource_name}")
 
 
 def delete(resource_id: str) -> None:
@@ -99,7 +129,8 @@ def list_sessions(resource_id: str, user_id: str) -> None:
     sessions = remote_app.list_sessions(user_id=user_id)
     print(f"Sessions for user '{user_id}':")
     for session in sessions:
-        print(f"- Session ID: {session['id']}")
+        print(session)
+        print(f"- Session ID: {session}")
 
 
 def get_session(resource_id: str, user_id: str, session_id: str) -> None:

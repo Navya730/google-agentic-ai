@@ -1,0 +1,6 @@
+google-adk==1.7.0
+fastapi
+uvicorn[standard]
+google-cloud-aiplatform
+python-multipart
+google-cloud-firestore
