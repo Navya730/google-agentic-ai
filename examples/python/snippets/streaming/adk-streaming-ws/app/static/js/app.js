@@ -1,31 +1,13 @@
-/**
-* Copyright 2025 Google LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
-
-/**
- * app.js: JS code for the adk-streaming sample app.
- */
-
-/**
- * WebSocket handling
- */
 
 // Connect the server with a WebSocket connection
 const sessionId = Math.random().toString().substring(10);
+
 const ws_url =
-  "ws://" + window.location.host + "/ws/" + sessionId;
+  "wss://" + "chat-apiv2-675840910180.asia-south1.run.app" + "/ws/" + sessionId;
+
+
+//const ws_url =
+//  "ws://" + window.location.host + "/ws/" + "846240145";
 let websocket = null;
 let is_audio = false;
 
